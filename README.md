@@ -1,0 +1,99 @@
+# Deskripsi Aplikasi
+
+Aplikasi "Smart School" adalah sebuah platform berbasis Laravel yang dirancang untuk membantu institusi pendidikan dalam mengelola berbagai aspek operasional sekolah, termasuk manajemen siswa, guru, dan administrasi sekolah. Aplikasi ini akan mempermudah pengelolaan data, pengarsipan, dan interaksi antara stakeholder dalam lingkungan pendidikan.
+
+Link smartscholl : [Smart School (click)](https://smartschool.rizalfahlevi8.my.id/login)
+
+## Dosen Pembimbing
+
+- Lukie Perdanasari
+- Bety Etikasari
+- Aji Seto
+
+## Tim Pengembang / MBKM
+
+- Muhammad Rizal Fahlevi / [https://github.com/rizalfahlevi8](https://github.com/rizalfahlevi8)
+- M. Fahim David Bachtiar / [https://github.com/Rynare](https://github.com/Rynare)
+- Sultan Arya M / [https://github.com/Nov189](https://github.com/Nov189)
+- Dimaz Raditya M / [https://github.com/DimazRM](https://github.com/DimazRM)
+
+## Fitur Utama
+
+Aplikasi "Smart School" akan memiliki beberapa fitur utama, termasuk:
+
+1. Manajemen Siswa: Mendaftarkan, mengupdate, dan mengarsipkan data siswa.
+2. Manajemen Guru: Mengelola data guru, jadwal mengajar, dan informasi pribadi guru.
+3. Manajemen Kelas: Membuat dan mengelola kelas, serta menghubungkannya dengan guru dan siswa.
+4. Penilaian dan Raport: Mencatat penilaian siswa dan menghasilkan raport secara otomatis.
+5. Manajemen Administrasi: Mengelola inventaris, dan administrasi sekolah lainnya.
+6. Komunikasi: Memfasilitasi komunikasi antara siswa, guru, dan orang tua melalui pesan dan pemberitahuan.
+
+## Panduan Penggunaan
+
+1. Clone repositori ini ke server lokal Anda.
+    ```
+    git clone https://github.com/rizalfahlevi8/SmartSchool.git
+    ```
+2. Masuk ke direktori proyek.
+    ```
+    cd siakad
+    ```
+3. Instal dependensi dengan Composer.
+    ```
+    composer install
+    ```
+4. Salin file .env.example menjadi .env dan atur konfigurasi database.
+    ```
+    cp .env.example .env
+    ```
+5. Generate kunci aplikasi untuk .env.
+    ```
+    php artisan key:generate
+    ```
+6. Migrasi dan seeding basis data.
+    ```
+    php artisan migrate:fresh --seed
+    ```
+7. Jalankan server lokal.
+    ```
+    php artisan serve
+    ```
+8. Buka aplikasi di browser dengan alamat yang muncul pada cmd setelah menjalankan perintah diatas, contoh url : [http://localhost:8000](http://localhost:8000).
+9. Jika Ingin terintegrasi dengan moodle Smart School, Link source code Moodle SmartSchool : [Source Code (click)](https://github.com/Izulfirman/MoodleSiakad)
+
+<br><br>
+
+## Integrasi AI Profiling (Python + Laravel)
+
+1. Jalankan layanan FastAPI pada folder `ai_service` (lihat panduan lengkap di `ai_service/README.md`). Secara default berjalan di `http://127.0.0.1:8001`.
+2. Pastikan variabel lingkungan `AI_PROFILING_SERVICE_URL` dan `AI_PROFILING_TIMEOUT` sudah diisi pada `.env`. Nilai default sudah disediakan pada `.env.example`.
+3. Endpoint baru `GET /api/ai/profiling/{siswa}` (proteksi `auth:sanctum`) akan membaca nilai dan absensi siswa, memanggil layanan Python, kemudian mengembalikan rekomendasi AI berupa JSON.
+4. Contoh pemanggilan:
+    ```bash
+    curl -H "Authorization: Bearer <SANCTUM_TOKEN>" \
+         http://localhost/api/ai/profiling/123
+    ```
+    Ganti `123` dengan `id` siswa yang valid.
+5. Dashboard siswa kini otomatis memanggil endpoint ini dan menampilkan ringkasan AI begitu halaman dibuka, jadi pastikan layanan FastAPI aktif saat user siswa login.
+
+<br><br>
+
+# dYs? LIST DEFAULT ACCOUNT
+
+### dY"O **Admin/root access**
+- **Username:** root
+- **Password:** admin
+
+### dY"O **Guru/teacher access**
+- **Username:** guru
+- **Password:** guru
+
+### dY"O **Murid/student access**
+- **Username:** siswa
+- **Password:** siswa
+
+## Kontribusi
+
+Kami menyambut kontribusi dari siapa saja yang ingin berpartisipasi dalam pengembangan aplikasi "Smart School". Jika Anda ingin berkontribusi, silakan buat pull request dan kami akan meninjau kontribusi Anda.
+
+Terima kasih telah berkontribusi pada proyek "Smart School"!
