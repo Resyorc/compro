@@ -75,6 +75,7 @@ class DashboardController extends Controller
                             $aiProfiling = $this->aiProfilingClient->profileStudent($myData);
                         } catch (\Throwable $exception) {
                             report($exception);
+                            $aiProfiling = $this->aiProfilingClient->profileStudent($myData);
                             $aiProfilingError = 'Profil AI tidak dapat dimuat saat ini.';
                         }
                     }
