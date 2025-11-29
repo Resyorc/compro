@@ -32,7 +32,7 @@ return [
 
     'ai_profiling' => [
         'base_url' => env('AI_PROFILING_SERVICE_URL', 'http://127.0.0.1:8001'),
-        'timeout' => (int) env('AI_PROFILING_TIMEOUT', 5),
+        'timeout' => (int) env('AI_PROFILING_TIMEOUT', 60),
     ],
 
 ];
