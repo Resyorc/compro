@@ -354,64 +354,60 @@
                                             </div>
                                         </li>
                                     </ul>
-                                    @if (!empty($aiProfilingError))
-                                        <div class="alert alert-warning mt-4" role="alert">
-                                            {{ $aiProfilingError }}
-                                        </div>
-                                    @elseif (!empty($aiProfiling))
-                                        @php
-                                            $riskLevel = strtolower(data_get($aiProfiling, 'risk_level', ''));
-                                            $badgeClasses = [
-                                                'high' => 'bg-gradient-danger',
-                                                'moderate' => 'bg-gradient-warning',
-                                                'low' => 'bg-gradient-success',
-                                            ];
-                                            $riskClass = $badgeClasses[$riskLevel] ?? 'bg-gradient-secondary';
-                                        @endphp
-                                        <div class="card mt-4">
-                                            <div
-                                                class="card-header d-flex flex-wrap justify-content-between align-items-center">
-                                                <div>
-                                                    <h4 class="card-title mb-0">AI Profil Siswa</h4>
-                                                    <small class="text-muted">Segmen:
-                                                        {{ data_get($aiProfiling, 'segmentation', '-') }}</small>
-                                                </div>
-                                                <span class="badge {{ $riskClass }} text-uppercase">
-                                                    Risiko {{ data_get($aiProfiling, 'risk_level', '-') }}
-                                                </span>
+                                    <div class="card mt-4" id="ai-profiling-card" data-endpoint="{{ $aiProfilingEndpoint }}">
+                                        <div class="card-header d-flex flex-wrap justify-content-between align-items-center">
+                                            <div>
+                                                <h4 class="card-title mb-0">AI Profil Siswa</h4>
+                                                <small class="text-muted" id="ai-profiling-subtitle">
+                                                    Profil belum digenerate. Klik tombol untuk memulai.
+                                                </small>
                                             </div>
-                                            <div class="card-body">
-                                                <p class="mb-4">{{ data_get($aiProfiling, 'summary', 'Tidak ada ringkasan tersedia.') }}</p>
-                                                <div class="row text-center">
-                                                    <div class="col-md-4 mb-3">
-                                                        <small class="text-uppercase text-muted">Indeks Akademik</small>
-                                                        <h5 class="mb-0">{{ data_get($aiProfiling, 'academic_index', '-') }}</h5>
+                                            <button type="button" class="btn btn-outline-primary btn-sm" id="ai-profiling-trigger" {{ $aiProfilingEndpoint ? '' : 'disabled' }}>
+                                                <span class="spinner-border spinner-border-sm me-2 d-none" id="ai-profiling-spinner" role="status" aria-hidden="true"></span>
+                                                <span id="ai-profiling-trigger-text">Generate Profil AI</span>
+                                            </button>
+                                        </div>
+                                        <div class="card-body">
+                                            @if (!$aiProfilingEndpoint)
+                                                <div class="alert alert-warning mb-0">
+                                                    Profil AI belum dapat digunakan karena endpoint tidak tersedia.
+                                                </div>
+                                            @else
+                                                <div id="ai-profiling-status" class="alert alert-info mb-3">
+                                                    Profil AI belum diminta. Tekan tombol untuk mengirim data ke layanan AI.
+                                                </div>
+                                                <div id="ai-profiling-error" class="alert alert-warning d-none"></div>
+                                                <div id="ai-profiling-content" class="d-none">
+                                                    <div class="d-flex flex-wrap justify-content-between align-items-center mb-3">
+                                                        <div>
+                                                            <small class="text-muted">Segmen</small>
+                                                            <div class="fw-bold text-uppercase" id="ai-profile-segmentation">-</div>
+                                                        </div>
+                                                        <span class="badge bg-gradient-secondary text-uppercase" id="ai-profile-risk">Risiko -</span>
                                                     </div>
-                                                    <div class="col-md-4 mb-3">
-                                                        <small class="text-uppercase text-muted">Kehadiran</small>
-                                                        <h5 class="mb-0">{{ data_get($aiProfiling, 'attendance_rate', '-') }}%</h5>
+                                                    <p class="mb-4" id="ai-profile-summary">Tidak ada ringkasan tersedia.</p>
+                                                    <div class="row text-center">
+                                                        <div class="col-md-4 mb-3">
+                                                            <small class="text-uppercase text-muted">Indeks Akademik</small>
+                                                            <h5 class="mb-0" id="ai-profile-academic">-</h5>
+                                                        </div>
+                                                        <div class="col-md-4 mb-3">
+                                                            <small class="text-uppercase text-muted">Kehadiran</small>
+                                                            <h5 class="mb-0" id="ai-profile-attendance">-</h5>
+                                                        </div>
+                                                        <div class="col-md-4 mb-3">
+                                                            <small class="text-uppercase text-muted">Indeks Keterlibatan</small>
+                                                            <h5 class="mb-0" id="ai-profile-engagement">-</h5>
+                                                        </div>
                                                     </div>
-                                                    <div class="col-md-4 mb-3">
-                                                        <small class="text-uppercase text-muted">Indeks Keterlibatan</small>
-                                                        <h5 class="mb-0">{{ data_get($aiProfiling, 'engagement_index', '-') }}</h5>
+                                                    <div id="ai-profile-recommendations" class="d-none">
+                                                        <h6 class="mt-4 mb-2">Rekomendasi Tindakan</h6>
+                                                        <ul class="list-group list-group-flush" id="ai-profile-recommendations-list"></ul>
                                                     </div>
                                                 </div>
-                                                @if (!empty(data_get($aiProfiling, 'recommendations')))
-                                                    <h6 class="mt-4 mb-2">Rekomendasi Tindakan</h6>
-                                                    <ul class="list-group list-group-flush">
-                                                        @foreach (data_get($aiProfiling, 'recommendations', []) as $recommendation)
-                                                            <li class="list-group-item">
-                                                                <span class="badge bg-gradient-info text-uppercase me-2">
-                                                                    {{ data_get($recommendation, 'category', 'Rekomendasi') }}
-                                                                </span>
-                                                                {{ data_get($recommendation, 'message', '-') }}
-                                                            </li>
-                                                        @endforeach
-                                                    </ul>
-                                                @endif
-                                            </div>
+                                            @endif
                                         </div>
-                                    @endif
+                                    </div>
                                 </div>
                                 <div class="card mt-4">
                                     <div class="card-header">
@@ -460,4 +456,196 @@
         }
     </script>  --}}
 
+@endsection
+
+@section('script')
+<script>
+    document.addEventListener('DOMContentLoaded', function() {
+        const card = document.getElementById('ai-profiling-card');
+        if (!card) {
+            return;
+        }
+
+        const endpoint = card.dataset.endpoint;
+        const trigger = document.getElementById('ai-profiling-trigger');
+        const triggerText = document.getElementById('ai-profiling-trigger-text');
+        const spinner = document.getElementById('ai-profiling-spinner');
+        const statusBox = document.getElementById('ai-profiling-status');
+        const errorBox = document.getElementById('ai-profiling-error');
+        const contentBox = document.getElementById('ai-profiling-content');
+        const subtitle = document.getElementById('ai-profiling-subtitle');
+        const summary = document.getElementById('ai-profile-summary');
+        const segmentation = document.getElementById('ai-profile-segmentation');
+        const riskBadge = document.getElementById('ai-profile-risk');
+        const academic = document.getElementById('ai-profile-academic');
+        const attendance = document.getElementById('ai-profile-attendance');
+        const engagement = document.getElementById('ai-profile-engagement');
+        const recWrapper = document.getElementById('ai-profile-recommendations');
+        const recList = document.getElementById('ai-profile-recommendations-list');
+
+        const riskClasses = {
+            high: 'bg-gradient-danger',
+            moderate: 'bg-gradient-warning',
+            low: 'bg-gradient-success',
+        };
+
+        const formatNumber = (value, suffix = '') => {
+            if (value === null || value === undefined || value === '') {
+                return '-';
+            }
+            const number = Number(value);
+            if (Number.isFinite(number)) {
+                return `${Number(number.toFixed(2))}${suffix}`;
+            }
+            return `${value}${suffix}`;
+        };
+
+        function setLoading(isLoading) {
+            if (!trigger) {
+                return;
+            }
+            trigger.disabled = isLoading;
+            if (spinner) {
+                spinner.classList.toggle('d-none', !isLoading);
+            }
+            if (triggerText) {
+                triggerText.textContent = isLoading ? 'Memproses...' : 'Generate Profil AI';
+            }
+        }
+
+        function resetContent() {
+            if (summary) summary.textContent = 'Tidak ada ringkasan tersedia.';
+            if (segmentation) segmentation.textContent = '-';
+            if (riskBadge) {
+                riskBadge.className = 'badge bg-gradient-secondary text-uppercase';
+                riskBadge.textContent = 'Risiko -';
+            }
+            if (academic) academic.textContent = '-';
+            if (attendance) attendance.textContent = '-';
+            if (engagement) engagement.textContent = '-';
+            if (recList) recList.innerHTML = '';
+            if (recWrapper) recWrapper.classList.add('d-none');
+        }
+
+        async function ensureCsrfCookie() {
+            // Sanctum butuh cookie XSRF untuk permintaan API yang memakai auth:sanctum.
+            await fetch('/sanctum/csrf-cookie', { credentials: 'include' });
+        }
+
+        function getCookie(name) {
+            return document.cookie.split(';').map(c => c.trim()).find(c => c.startsWith(name + '='))?.split('=')[1] ?? '';
+        }
+
+        async function fetchProfiling() {
+            if (!endpoint) {
+                return;
+            }
+
+            setLoading(true);
+            resetContent();
+
+            if (errorBox) {
+                errorBox.classList.add('d-none');
+                errorBox.textContent = '';
+            }
+            if (contentBox) {
+                contentBox.classList.add('d-none');
+            }
+            if (statusBox) {
+                statusBox.classList.remove('d-none');
+                statusBox.textContent = 'Mengirim data ke layanan AI...';
+            }
+            if (subtitle) {
+                subtitle.textContent = 'Permintaan sedang diproses. Mohon tunggu...';
+            }
+
+            try {
+                await ensureCsrfCookie();
+                const xsrfToken = decodeURIComponent(getCookie('XSRF-TOKEN') || '');
+
+                const response = await fetch(endpoint, {
+                    method: 'GET',
+                    headers: {
+                        'Accept': 'application/json',
+                        'X-Requested-With': 'XMLHttpRequest',
+                        'X-XSRF-TOKEN': xsrfToken,
+                    },
+                    credentials: 'include',
+                });
+
+                const payload = await response.json().catch(() => ({}));
+                if (!response.ok || !payload.success) {
+                    throw new Error(payload.message || 'Profil AI tidak dapat dimuat.');
+                }
+
+                renderProfiling(payload.data);
+            } catch (error) {
+                if (errorBox) {
+                    errorBox.textContent = error?.message || 'Profil AI tidak dapat dimuat.';
+                    errorBox.classList.remove('d-none');
+                }
+                if (statusBox) {
+                    statusBox.classList.add('d-none');
+                }
+                if (subtitle) {
+                    subtitle.textContent = 'Gagal memuat profil AI. Coba lagi.';
+                }
+            } finally {
+                setLoading(false);
+            }
+        }
+
+        function renderProfiling(data) {
+            if (!data) {
+                return;
+            }
+
+            if (statusBox) {
+                statusBox.classList.add('d-none');
+            }
+            if (subtitle) {
+                subtitle.textContent = 'Profil berhasil dibuat dari layanan AI.';
+            }
+            if (contentBox) {
+                contentBox.classList.remove('d-none');
+            }
+
+            if (summary) summary.textContent = data.summary || 'Tidak ada ringkasan tersedia.';
+            if (segmentation) segmentation.textContent = data.segmentation || '-';
+
+            const riskLevel = String(data.risk_level || '').toLowerCase();
+            const riskClass = riskClasses[riskLevel] || 'bg-gradient-secondary';
+            if (riskBadge) {
+                riskBadge.className = `badge ${riskClass} text-uppercase`;
+                riskBadge.textContent = `Risiko ${data.risk_level || '-'}`;
+            }
+
+            if (academic) academic.textContent = formatNumber(data.academic_index);
+            if (attendance) attendance.textContent = formatNumber(data.attendance_rate, '%');
+            if (engagement) engagement.textContent = formatNumber(data.engagement_index);
+
+            const recommendations = Array.isArray(data.recommendations) ? data.recommendations : [];
+            if (recList) {
+                recList.innerHTML = '';
+                recommendations.forEach((rec) => {
+                    const item = document.createElement('li');
+                    item.className = 'list-group-item';
+                    const badge = document.createElement('span');
+                    badge.className = 'badge bg-gradient-info text-uppercase me-2';
+                    badge.textContent = rec.category || 'Rekomendasi';
+                    item.appendChild(badge);
+                    item.appendChild(document.createTextNode(rec.message || '-'));
+                    recList.appendChild(item);
+                });
+            }
+            if (recWrapper) {
+                recWrapper.classList.toggle('d-none', recommendations.length === 0);
+            }
+        }
+
+        if (trigger && endpoint) {
+            trigger.addEventListener('click', fetchProfiling);
+        }
+    });
+</script>
 @endsection

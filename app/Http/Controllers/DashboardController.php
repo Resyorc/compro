@@ -8,16 +8,11 @@ use App\Models\Siswa;
 use App\Models\User;
 use App\Models\Pengumuman;
 use App\Models\Tamu;
-use App\Services\AiProfilingClient;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\DB;
 
 class DashboardController extends Controller
 {
-    public function __construct(protected AiProfilingClient $aiProfilingClient)
-    {
-    }
-
     public function index()
     {
         if (Auth::check()) {
@@ -26,8 +21,6 @@ class DashboardController extends Controller
             $kelas = Kelas::where('deleted', 0)->get();
             $siswa = Siswa::whereNotIn('status', ['lulus', 'keluar'])->get();
             $rolePengumuman = [];
-            $aiProfiling = null;
-            $aiProfilingError = null;
             $datas = array();
             $role = auth()->user()->current_role;
 
@@ -70,18 +63,9 @@ class DashboardController extends Controller
                     break;
                 case 'siswa':
                     $myData = Siswa::where('id_user', auth()->id())->first();
-                    if ($myData) {
-                        try {
-                            $aiProfiling = $this->aiProfilingClient->profileStudent($myData);
-                        } catch (\Throwable $exception) {
-                            report($exception);
-                            $aiProfilingError = 'Profil AI tidak dapat dimuat saat ini.';
-                        }
-                    }
                     $datas = [
                         'myData' => $myData,
-                        'aiProfiling' => $aiProfiling,
-                        'aiProfilingError' => $aiProfilingError,
+                        'aiProfilingEndpoint' => $myData ? route('api.ai-profiling.show', ['siswa' => $myData->id]) : null,
                     ];
                     break;
                 default:
@@ -128,8 +112,6 @@ class DashboardController extends Controller
             ,compact('tamu_pesans')
             , [
                 'rolePengumuman' => $rolePengumuman,
-                'aiProfiling' => $aiProfiling,
-                'aiProfilingError' => $aiProfilingError,
             ] + $datas)->with('title', 'Dashboard');    
 
         }
