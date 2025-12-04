@@ -63,18 +63,9 @@ class DashboardController extends Controller
                     break;
                 case 'siswa':
                     $myData = Siswa::where('id_user', auth()->id())->first();
-                    if ($myData) {
-                        try {
-                            $aiProfiling = $this->aiProfilingClient->profileStudent($myData);
-                        } catch (\Throwable $exception) {
-                            report($exception);
-                            $aiProfiling = $this->aiProfilingClient->profileStudent($myData);
-                            $aiProfilingError = 'Profil AI tidak dapat dimuat saat ini.';
-                        }
-                    }
                     $datas = [
                         'myData' => $myData,
-                        'aiProfilingEndpoint' => $myData ? route('api.ai-profiling.show', ['siswa' => $myData->id]) : null,
+                        'aiProfilingEndpoint' => $myData ? route('web.ai-profiling.self') : null,
                     ];
                     break;
                 default:

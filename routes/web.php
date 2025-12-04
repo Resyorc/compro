@@ -90,6 +90,8 @@ Route::middleware(['auth'])->group(function () {
 
     // ==============[ D A S H B O A R D ]===============
     Route::get('/dashboard', [DashboardController::class, 'index'])->name('dashboard');
+    Route::get('/dashboard/ai/profiling', [\App\Http\Controllers\AiProfilingController::class, 'showSelf'])
+        ->name('web.ai-profiling.self');
 
     // ==============[ S T A T U S - T A M U ]===============
     Route::match(['post'], '/dashboard/{id}/terima', [DashboardController::class, 'terimaPesan'])->name('dashboard.terimaPesan');

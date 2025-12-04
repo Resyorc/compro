@@ -33,4 +33,16 @@ class AiProfilingController extends Controller
             ], 502);
         }
     }
+
+    /**
+     * Endpoint khusus pengguna yang sudah login (siswa) agar bisa memanggil profiling via sesi web.
+     */
+    public function showSelf(): JsonResponse
+    {
+        $userId = auth()->id();
+        $siswa = $userId ? Siswa::where('id_user', $userId)->first() : null;
+        abort_if(!$siswa, 403);
+
+        return $this->show($siswa);
+    }
 }
